@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nouvelle Vente - VinumGestion</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Styles de base cohérents avec le dashboard */
+        :root {
+            --primary: #ff2770;
+            --secondary: #25252b;
+            --light: #ffffff;
+            --dark: #1a1a1f;
+            --gray: #f5f5f5;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background-image: url(img/dcv.jpg);
+            background-repeat: no-repeat;
+            background-size: 100%;
+            background-position: center;
+            color: var(--dark);
+        }
+        
+        /* Header */
+        .header {
+            background: var(--secondary);
+            color: var(--light);
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header h1 {
+            font-size: 1.5rem;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .btn {
+            padding: 8px 15px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: var(--light);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--light);
+            color: var(--light);
+        }
+        
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        
+        /* Conteneur principal */
+        .container {
+            display: flex;
+            min-height: calc(100vh - 60px);
+        }
+        
+        /* Section de vente */
+        .sale-section {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        /* Panier */
+        .cart-container {
+            background-image: url(img/23e.jpg);
+            border-radius: 8px;
+            box-shadow: 0 8px 5px var(--primary), var(--primary) 1px 5px 5px inset;
+            padding: 20px;
+            flex: 1;
+        }
+        
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .cart-header h2 {
+            color: var(--secondary);
+        }
+        
+        .cart-items {
+            margin-bottom: 20px;
+        }
+        
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .item-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .item-info img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        
+        .item-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .quantity-btn {
+            width: 25px;
+            height: 25px;
+            border: 1px solid #e732d8;
+            background: var(--gray);
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        
+        .quantity-input {
+            width: 40px;
+            text-align: center;
+            border: 1px solid #ddd;
+            padding: 3px;
+            border-radius: 4px;
+        }
+        
+        .remove-btn {
+            color: var(--danger);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+        
+        .cart-summary {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .total-row {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #ddd;
+        }
+        
+        /* Liste des produits */
+        .products-container {
+            background: #33333309;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            flex: 2;
+        }
+        
+        .search-bar {
+            display: flex;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        .category-filter {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: var(--light);
+        }
+        
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .product-card {
+            border: 1px solid var(--primary);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .product-image {
+            height: 150px;
+            background: #f9f9f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+        }
+        
+        .product-image img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        
+        .product-info {
+            padding: 15px;
+            background: #333333f6;
+        }
+        
+        .product-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #ddd;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .product-price {
+            color: var(--primary);
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .product-stock {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .in-stock {
+            color: var(--success);
+        }
+        
+        .low-stock {
+            color: var(--warning);
+        }
+        
+        .out-of-stock {
+            color: rgb(255, 81, 0);
+        }
+        
+        /* Modal client */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: var(--light);
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            padding: 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .product-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .header {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+            
+            .header-actions {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .search-bar {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <h1><i class="fas fa-cash-register"></i> Nouvelle Vente</h1>
+        <div class="header-actions">
+            <button class="btn btn-outline"><i class="fas fa-history"></i> Historique</button>
+            <button class="btn btn-primary"><i class="fas fa-save"></i> Enregistrer</button>
+        </div>
+    </div>
+    
+    <!-- Conteneur principal -->
+    <div class="container">
+        <!-- Section produits -->
+        <div class="products-container">
+            <div class="search-bar">
+                <input type="text" class="search-input" placeholder="Rechercher un vin...">
+                <select class="category-filter">
+                    <option>Toutes les catégories</option>
+                    <option>Rouges</option>
+                    <option>Blancs</option>
+                    <option>Rosés</option>
+                    <option>Champagnes</option>
+                    <option>Spiritueux</option>
+                </select>
+            </div>
+            
+            <div class="product-grid">
+                <!-- Produit 1 -->
+                <div class="product-card" onclick="addToCart(1)">
+                    <div class="product-image">
+                        <img src="img/OIP.webp" alt="Château Margaux">
+                    </div>
+                    <div class="product-info">
+                        <div class="product-title">Château Margaux</div>
+                        <div class="product-price">450 FCFA</div>
+                        <div class="product-stock in-stock">En stock (12)</div>
+                    </div>
+                </div>
+                
+                <!-- Produit 2 -->
+                <div class="product-card" onclick="addToCart(2)">
+                    <div class="product-image">
+                        <img src="img/OIP.webp" alt="Romanée-Conti">
+                    </div>
+                    <div class="product-info">
+                        <div class="product-title">Domaine de la Romanée-Conti</div>
+                        <div class="product-price">1200 FCFA</div>
+                        <div class="product-stock in-stock">En stock (5)</div>
+                    </div>
+                </div>
+                
+                <!-- Produit 3 -->
+                <div class="product-card" onclick="addToCart(3)">
+                    <div class="product-image">
+                        <img src="img/OIP.webp" alt="Lafite Rothschild">
+                    </div>
+                    <div class="product-info">
+                        <div class="product-title">Château Lafite Rothschild 2010</div>
+                        <div class="product-price">600 FCFA</div>
+                        <div class="product-stock low-stock">Stock faible (3)</div>
+                    </div>
+                </div>
+                
+                <!-- Produit 4 -->
+                <div class="product-card" onclick="addToCart(4)">
+                    <div class="product-image">
+                        <img src="img/OIP.webp" alt="Château d'Yquem">
+                    </div>
+                    <div class="product-info">
+                        <div class="product-title">Château d'Yquem</div>
+                        <div class="product-price">280 FCFA</div>
+                        <div class="product-stock in-stock">En stock (8)</div>
+                    </div>
+                </div>
+                
+                <!-- Produit 5 -->
+                <div class="product-card" onclick="addToCart(5)">
+                    <div class="product-image">
+                        <img src="img/OIP.webp" alt="Champagne Krug">
+                    </div>
+                    <div class="product-info">
+                        <div class="product-title">Champagne Krug Grande Cuvée</div>
+                        <div class="product-price">150 FCFA</div>
+                        <div class="product-stock in-stock">En stock (24)</div>
+                    </div>
+                </div>
+                
+                <!-- Produit 6 -->
+                <div class="product-card" onclick="addToCart(6)">
+                    <div class="product-image">
+                        <img src="img/OIP.webp" alt="Petrus">
+                    </div>
+                    <div class="product-info">
+                        <div class="product-title">Petrus</div>
+                        <div class="product-price">2500 FCFA</div>
+                        <div class="product-stock out-of-stock">Rupture de stock</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Panier -->
+        <div class="cart-container" >
+            <div class="cart-header">
+                <h2><i class="fas fa-shopping-cart"></i> Panier</h2>
+                <button class="btn btn-outline" onclick="openClientModal()" style="color: var(--secondary); border-color: var(--secondary);">
+                    <i class="fas fa-user-plus"></i> Client
+                </button>
+            </div>
+            
+            <div class="cart-items">
+                <!-- Exemple d'article dans le panier -->
+                <div class="cart-item">
+                    <div class="item-info">
+                        <img src="img/OIP.webp" alt="Château Margaux">
+                        <div>
+                            <div>Château Margaux</div>
+                            <div>450 FCFA</div>
+                        </div>
+                    </div>
+                    <div class="item-actions">
+                        <div class="quantity-control">
+                            <button class="quantity-btn">-</button>
+                            <input type="number" class="quantity-input" value="1" min="1">
+                            <button class="quantity-btn">+</button>
+                        </div>
+                        <button class="remove-btn"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+                
+                <!-- Un autre article -->
+                <div class="cart-item">
+                    <div class="item-info">
+                        <img src="img/OIP.webp" alt="Champagne Krug">
+                        <div>
+                            <div>Champagne Krug Grande Cuvée</div>
+                            <div>150 FCFA</div>
+                        </div>
+                    </div>
+                    <div class="item-actions">
+                        <div class="quantity-control">
+                            <button class="quantity-btn">-</button>
+                            <input type="number" class="quantity-input" value="2" min="1">
+                            <button class="quantity-btn">+</button>
+                        </div>
+                        <button class="remove-btn"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="cart-summary">
+                <div class="summary-row">
+                    <span>Sous-total</span>
+                    <span>750 FCFA</span>
+                </div>
+                <div class="summary-row">
+                    <span>Remise</span>
+                    <span>-0 FCFA</span>
+                </div>
+                <div class="summary-row total-row">
+                    <span>Total</span>
+                    <span>750 FCFA</span>
+                </div>
+                
+                <button class="btn btn-primary" style="width: 100%; margin-top: 20px; padding: 12px;">
+                    <i class="fas fa-check"></i> Finaliser la vente
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal pour ajouter un client -->
+    <div class="modal" id="clientModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Ajouter un client</h2>
+                <button class="close-modal" onclick="closeClientModal()">&times;</button>
+            </div>
+            <form>
+                <div class="form-group">
+                    <label for="clientName">Nom complet</label>
+                    <input type="text" id="clientName" class="form-control" placeholder="Akono Narsky">
+                </div>
+                <div class="form-group">
+                    <label for="clientPhone">Téléphone</label>
+                    <input type="tel" id="clientPhone" class="form-control" placeholder="+237 6 70 17 20 47">
+                </div>
+                <div class="form-group">
+                    <label for="clientAddress">Adresse</label>
+                    <textarea id="clientAddress" class="form-control" rows="3"></textarea>
+                </div>
+                <button type="button" class="btn btn-primary" style="width: 100%; margin-top: 10px;">
+                    <i class="fas fa-save"></i> Enregistrer
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        // Gestion du modal client
+        function openClientModal() {
+            document.getElementById('clientModal').style.display = 'flex';
+        }
+        
+        function closeClientModal() {
+            document.getElementById('clientModal').style.display = 'none';
+        }
+        
+        // Fermer le modal si on clique en dehors
+        window.onclick = function(event) {
+            const modal = document.getElementById('clientModal');
+            if (event.target === modal) {
+                closeClientModal();
+            }
+        }
+        
+        // Fonction pour ajouter un produit au panier
+        function addToCart(productId) {
+            // Ici, vous ajouteriez la logique pour ajouter un produit au panier
+            console.log(`Produit ${productId} ajouté au panier`);
+            alert('Produit ajouté au panier!');
+        }
+        
+        // Gestion des quantités
+        document.querySelectorAll('.quantity-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const input = this.parentElement.querySelector('.quantity-input');
+                let value = parseInt(input.value);
+                
+                if (this.textContent === '+' && value < 99) {
+                    input.value = value + 1;
+                } else if (this.textContent === '-' && value > 1) {
+                    input.value = value - 1;
+                }
+                
+                // Ici, vous mettriez à jour le total du panier
+            });
+        });
+        
+        // Gestion de la suppression d'articles
+        document.querySelectorAll('.remove-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                if (confirm('Supprimer cet article du panier?')) {
+                    this.closest('.cart-item').remove();
+                    // Ici, vous mettriez à jour le total du panier
+                }
+            });
+        });
+    </script>
+</body>
+</html>
